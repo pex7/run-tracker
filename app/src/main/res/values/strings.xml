@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Run Tracker</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoicGV4NyIsImEiOiJjbGFvdThjMDgxMjhiM29vMjBhbng0MXA4In0.T5abdg-eqwc4PXRwCrHz9g</string>
+    <string name="miles_label">M</string>
+    <string name="kilometers_label">KM</string>
+    <string name="start_run_description">Start run</string>
+    <string name="share_run_description">Share run</string>
+    <string name="snapshot_description">Snapshot of your run</string>
+</resources>
