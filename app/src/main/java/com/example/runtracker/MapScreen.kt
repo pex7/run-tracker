@@ -19,6 +19,11 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mapbox.geojson.Point
+import com.mapbox.geojson.Point.fromLngLat
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
 
 @Composable
 fun MapScreen(
@@ -63,6 +68,18 @@ fun MapScreen(
                             }
                         }
                     }
+                val annotationsApi = mapView.annotations
+                val polylineAnnotationManager = annotationsApi.createPolylineAnnotationManager(mapView)
+                val points = listOf(
+                    fromLngLat(-115.154, 36.1585, ),
+                    fromLngLat(-115.153, 36.1584, )
+                )
+                val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
+                    .withPoints(points)
+                    .withLineColor("#ee4e8b")
+                    .withLineWidth(5.0)
+
+                polylineAnnotationManager?.create(polylineAnnotationOptions)
             }
         )
         Column(
