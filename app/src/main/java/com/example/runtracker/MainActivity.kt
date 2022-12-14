@@ -22,9 +22,9 @@ import com.mapbox.common.location.compat.permissions.PermissionsManager
 class MainActivity : ComponentActivity() {
     lateinit var permissionsManager: PermissionsManager
     lateinit var locationEngine: LocationEngine
+    private lateinit var viewModel: MapViewModel
     var permissionsListener = getPermissionsListener()
-    var latLng: Pair<Double?, Double?> = Pair(null, null)
-    private val callback = LocationListeningCallback(this, latLng)
+    private val callback = LocationListeningCallback(this)
 
     private var request = LocationEngineRequest.Builder(1000L)
         .setPriority(LocationEngineRequest.PRIORITY_NO_POWER)
@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
         }
         locationEngine.requestLocationUpdates(request, callback, mainLooper)
         locationEngine.getLastLocation(callback)
+        viewModel = MapViewModel(callback.latLng)
 
         setContent {
             RunTrackerTheme {
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MapScreen(locationCallback = callback)
+                    MapScreen(viewModel = viewModel)
                 }
             }
         }

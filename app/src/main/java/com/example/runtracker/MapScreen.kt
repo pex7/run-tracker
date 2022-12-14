@@ -5,13 +5,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,13 +19,11 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mapbox.maps.MapboxMap
 
 @Composable
 fun MapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = viewModel(),
-    locationCallback: LocationListeningCallback
 ) {
     val state = viewModel.state
     val metricLabel =
@@ -37,12 +32,6 @@ fun MapScreen(
     // no disabled property for FloatingActionButton :(
     val shareColor =
         if (state.endingPoint !== null) MaterialTheme.colors.error else Color.LightGray
-
-    Log.d("$$$$", "currentLocation MAP SCREEN: $locationCallback.latLng")
-
-    LaunchedEffect(key1 = locationCallback.latLng) {
-        viewModel.onEvent(MapEvent.OnLocationChange(locationCallback.latLng))
-    }
 
     Box(
         modifier.fillMaxSize()
@@ -87,6 +76,7 @@ fun MapScreen(
                     checked = state.isDarkMode,
                     onCheckedChange = { viewModel.onEvent(MapEvent.OnDarkModeChange) })
             }
+            Text(text = state.currentLocation.toString())
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -98,8 +88,8 @@ fun MapScreen(
                     backgroundColor = shareColor
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.share),
-                        contentDescription = stringResource(id = R.string.share_run_description),
+                        painter = painterResource(id = R.drawable.camera),
+                        contentDescription = stringResource(id = R.string.take_snapshot_description),
                         modifier = Modifier.size(20.dp)
                     )
                 }

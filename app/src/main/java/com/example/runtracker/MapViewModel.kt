@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.runtracker.MapEvent.OnDarkModeChange
 import com.example.runtracker.MapEvent.OnStartRun
 import com.example.runtracker.MapEvent.OnStopRun
@@ -13,10 +14,23 @@ import com.example.runtracker.MapEvent.OnLocationChange
 import com.example.runtracker.MapEvent.OnSnapshotPress
 import com.example.runtracker.MapEvent.OnSnapshotTaken
 import com.example.runtracker.MapEvent.OnRemoveSnapshot
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-class MapViewModel : ViewModel() {
+class MapViewModel(
+    private val latLng: StateFlow<Pair<Double?, Double?>>
+) : ViewModel() {
     var state by mutableStateOf(MapState())
         private set
+
+    init {
+        viewModelScope.launch {
+            latLng.collect {
+                state = state.copy(currentLocation = it)
+            }
+        }
+    }
 
     fun onEvent(event: MapEvent) {
         when (event) {

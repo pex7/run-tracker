@@ -4,6 +4,6 @@
     <string name="miles_label">M</string>
     <string name="kilometers_label">KM</string>
     <string name="start_run_description">Start run</string>
-    <string name="share_run_description">Share run</string>
+    <string name="take_snapshot_description">Take a snapshot of your run</string>
     <string name="snapshot_description">Snapshot of your run</string>
 </resources>
