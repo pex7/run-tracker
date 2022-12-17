@@ -13,9 +13,9 @@ class LocationListeningCallback internal constructor(
 ) : LocationEngineCallback<LocationEngineResult> {
     private val activityWeakReference: WeakReference<MainActivity>
 
-    private val _latLng: MutableStateFlow<Pair<Double?, Double?>> =
+    private val _lngLat: MutableStateFlow<Pair<Double?, Double?>> =
         MutableStateFlow(Pair(null, null))
-    val latLng: StateFlow<Pair<Double?, Double?>> = _latLng
+    val latLng: StateFlow<Pair<Double?, Double?>> = _lngLat
 
     init {
         this.activityWeakReference = WeakReference(activity)
@@ -24,7 +24,7 @@ class LocationListeningCallback internal constructor(
     override fun onSuccess(result: LocationEngineResult?) {
         val lat = result?.lastLocation?.latitude
         val lng = result?.lastLocation?.longitude
-        _latLng.value = Pair(lat, lng)
+        _lngLat.value = Pair(lng, lat)
     }
 
     override fun onFailure(exception: Exception) {

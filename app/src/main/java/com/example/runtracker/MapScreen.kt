@@ -1,6 +1,5 @@
 package com.example.runtracker
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -19,11 +18,8 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Point.fromLngLat
 import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.*
 
 @Composable
 fun MapScreen(
@@ -62,24 +58,23 @@ fun MapScreen(
                         }
                         mapView.viewport.transitionTo(mapView.viewport.makeFollowPuckViewportState())
                         if (state.shouldTakeSnapshot) {
-                            Log.d("$$$$", "state.shouldTakeSnapshot: ${state.shouldTakeSnapshot}")
                             mapView.snapshot { bitmap ->
                                 viewModel.onEvent(MapEvent.OnSnapshotTaken(bitmap))
                             }
                         }
                     }
                 val annotationsApi = mapView.annotations
-                val polylineAnnotationManager = annotationsApi.createPolylineAnnotationManager(mapView)
-                val points = listOf(
-                    fromLngLat(-115.154, 36.1585, ),
-                    fromLngLat(-115.153, 36.1584, )
-                )
-                val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
-                    .withPoints(points)
-                    .withLineColor("#ee4e8b")
-                    .withLineWidth(5.0)
+                val polylineAnnotationManager = annotationsApi.createPolylineAnnotationManager()
 
-                polylineAnnotationManager?.create(polylineAnnotationOptions)
+                state.endingPoint?.let {
+                    val polylineAnnotationOptions: PolylineAnnotationOptions =
+                        PolylineAnnotationOptions()
+                            .withPoints(state.pathPoints)
+                            .withLineColor("#ee4e8b")
+                            .withLineWidth(8.0)
+
+                    polylineAnnotationManager.create(polylineAnnotationOptions)
+                }
             }
         )
         Column(

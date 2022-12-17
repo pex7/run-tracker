@@ -14,8 +14,8 @@ import com.example.runtracker.MapEvent.OnLocationChange
 import com.example.runtracker.MapEvent.OnSnapshotPress
 import com.example.runtracker.MapEvent.OnSnapshotTaken
 import com.example.runtracker.MapEvent.OnRemoveSnapshot
+import com.mapbox.geojson.Point
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MapViewModel(
@@ -28,6 +28,17 @@ class MapViewModel(
         viewModelScope.launch {
             latLng.collect {
                 state = state.copy(currentLocation = it)
+
+                if (it.first !== null && it.second !== null) {
+                    state = state.copy(
+                        pathPoints = state.pathPoints.plus(
+                            Point.fromLngLat(
+                                it.first!!,
+                                it.second!!
+                            )
+                        ).toMutableList()
+                    )
+                }
             }
         }
     }
@@ -41,7 +52,10 @@ class MapViewModel(
                 state = state.copy(isRunning = true)
             }
             is OnStopRun -> {
-                state = state.copy(isRunning = false)
+                state = state.copy(
+                    isRunning = false,
+                    endingPoint = state.pathPoints.last()
+                )
             }
             is OnShareRun -> {
 
