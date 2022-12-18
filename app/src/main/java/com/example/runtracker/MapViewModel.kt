@@ -9,14 +9,18 @@ import com.example.runtracker.MapEvent.OnDarkModeChange
 import com.example.runtracker.MapEvent.OnStartRun
 import com.example.runtracker.MapEvent.OnStopRun
 import com.example.runtracker.MapEvent.OnShareRun
-import com.example.runtracker.MapEvent.OnMetricChange
+import com.example.runtracker.MapEvent.OnUnitChange
 import com.example.runtracker.MapEvent.OnLocationChange
 import com.example.runtracker.MapEvent.OnSnapshotPress
 import com.example.runtracker.MapEvent.OnSnapshotTaken
 import com.example.runtracker.MapEvent.OnRemoveSnapshot
 import com.mapbox.geojson.Point
+import com.mapbox.turf.TurfMeasurement
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.*
+
+private const val KILOMETERS_IN_ONE_MILE = 1.60934
 
 class MapViewModel(
     private val latLng: StateFlow<Pair<Double?, Double?>>
@@ -54,14 +58,18 @@ class MapViewModel(
             is OnStopRun -> {
                 state = state.copy(
                     isRunning = false,
-                    endingPoint = state.pathPoints.last()
+                    endingPoint = state.pathPoints.last(),
+                    totalDistanceText = getTotalDistance()
                 )
             }
             is OnShareRun -> {
 
             }
-            is OnMetricChange -> {
-                state = state.copy(metric = changeMetric())
+            is OnUnitChange -> {
+                state = state.copy(
+                    unit = changeUnit(),
+                    totalDistanceText = changeDistanceUnit()
+                )
             }
             is OnLocationChange -> {
                 state = state.copy(currentLocation = event.latLng)
@@ -78,6 +86,27 @@ class MapViewModel(
         }
     }
 
-    private fun changeMetric(): Metric =
-        if (state.metric == Metric.MILES) Metric.KILOMETERS else Metric.MILES
+    private fun changeUnit(): Unit =
+        if (state.unit == Unit.MILES) Unit.KILOMETERS else Unit.MILES
+
+    private fun Double.formatDistance() = "%.2f".format(this)
+
+    private fun getTotalDistance() = TurfMeasurement.distance(
+        state.pathPoints.first(),
+        state.pathPoints.last(),
+        state.unit.name.lowercase(Locale.ROOT)
+    ).formatDistance()
+
+    private fun changeDistanceUnit() =
+        if (state.unit == Unit.MILES) {
+            state.totalDistanceText?.milesToKilometers()
+        } else {
+            state.totalDistanceText?.kilometersToMiles()
+        }
+
+    private fun String.milesToKilometers() =
+        (this.toDouble() * KILOMETERS_IN_ONE_MILE).formatDistance()
+
+    private fun String.kilometersToMiles() =
+        (this.toDouble() / KILOMETERS_IN_ONE_MILE).formatDistance()
 }

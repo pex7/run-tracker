@@ -7,7 +7,7 @@ sealed interface MapEvent {
     object OnStopRun : MapEvent
     object OnShareRun : MapEvent
     object OnDarkModeChange : MapEvent
-    object OnMetricChange : MapEvent
+    object OnUnitChange : MapEvent
     object OnSnapshotPress : MapEvent
     object OnRemoveSnapshot : MapEvent
     data class OnLocationChange(val latLng: Pair<Double?, Double?>) : MapEvent

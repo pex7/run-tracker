@@ -20,6 +20,7 @@ import com.mapbox.maps.plugin.viewport.viewport
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
+import java.util.*
 
 @Composable
 fun MapScreen(
@@ -27,8 +28,8 @@ fun MapScreen(
     viewModel: MapViewModel = viewModel(),
 ) {
     val state = viewModel.state
-    val metricLabel =
-        if (state.metric == Metric.MILES) R.string.miles_label else R.string.kilometers_label
+    val unitLabel =
+        if (state.unit == Unit.MILES) R.string.miles_label else R.string.kilometers_label
     val runLabel = if (state.isRunning) R.drawable.stop else R.drawable.start
     // no disabled property for FloatingActionButton :(
     val shareColor =
@@ -89,6 +90,9 @@ fun MapScreen(
                     onCheckedChange = { viewModel.onEvent(MapEvent.OnDarkModeChange) })
             }
             Text(text = state.currentLocation.toString())
+            state.totalDistanceText?.let {
+                Text(text = "${state.totalDistanceText} ${state.unit.name.lowercase(Locale.ROOT)}")
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -117,11 +121,11 @@ fun MapScreen(
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 12.dp))
                 FloatingActionButton(
-                    onClick = { viewModel.onEvent(MapEvent.OnMetricChange) },
+                    onClick = { viewModel.onEvent(MapEvent.OnUnitChange) },
                     modifier = Modifier.size(44.dp),
                     backgroundColor = MaterialTheme.colors.error
                 ) {
-                    Text(text = stringResource(id = metricLabel))
+                    Text(text = stringResource(id = unitLabel))
                 }
             }
         }
