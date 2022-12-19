@@ -1,5 +1,7 @@
 package com.example.runtracker
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -26,6 +28,7 @@ import java.util.*
 fun MapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = viewModel(),
+    applicationContext: Context
 ) {
     val state = viewModel.state
     val unitLabel =
@@ -112,7 +115,14 @@ fun MapScreen(
                 Spacer(modifier = Modifier.padding(horizontal = 12.dp))
                 FloatingActionButton(onClick = {
                     val runEvent = if (state.isRunning) MapEvent.OnStopRun else MapEvent.OnStartRun
+                    val serviceAction =
+                        if (state.isRunning) LocationService.ACTION_STOP else LocationService.ACTION_START
                     viewModel.onEvent(runEvent)
+                    Intent(applicationContext, LocationService::class.java).apply {
+                        action = serviceAction
+                        putExtra("totalDistance", "10 miles")
+                        applicationContext.startService(this)
+                    }
                 }) {
                     Icon(
                         painter = painterResource(id = runLabel),

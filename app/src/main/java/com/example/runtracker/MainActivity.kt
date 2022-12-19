@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MapScreen(viewModel = viewModel)
+                    MapScreen(viewModel = viewModel, applicationContext = applicationContext)
                 }
             }
         }

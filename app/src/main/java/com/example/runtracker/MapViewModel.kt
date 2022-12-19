@@ -23,7 +23,7 @@ import java.util.*
 private const val KILOMETERS_IN_ONE_MILE = 1.60934
 
 class MapViewModel(
-    private val latLng: StateFlow<Pair<Double?, Double?>>
+   private val latLng: StateFlow<Pair<Double?, Double?>>
 ) : ViewModel() {
     var state by mutableStateOf(MapState())
         private set
