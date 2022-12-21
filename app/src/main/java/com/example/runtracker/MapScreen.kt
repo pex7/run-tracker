@@ -1,5 +1,7 @@
 package com.example.runtracker
 
+import android.content.Intent
+import android.provider.MediaStore
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -8,19 +10,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mapbox.maps.MapView
 import com.mapbox.maps.ResourceOptionsManager
 import com.mapbox.maps.Style
-import com.mapbox.maps.plugin.locationcomponent.location
-import com.mapbox.maps.plugin.viewport.viewport
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
+import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.plugin.viewport.viewport
 import java.util.*
+
 
 @Composable
 fun MapScreen(
@@ -34,6 +38,7 @@ fun MapScreen(
     // no disabled property for FloatingActionButton :(
     val shareColor =
         if (state.endingPoint !== null) MaterialTheme.colors.error else Color.LightGray
+    val context = LocalContext.current
 
     Box(
         modifier.fillMaxSize()
@@ -139,6 +144,24 @@ fun MapScreen(
                     )
                     Button(onClick = { viewModel.onEvent(MapEvent.OnRemoveSnapshot) }) {
                         Text(text = "Close")
+                    }
+                    Button(onClick = {
+                        viewModel.onEvent(MapEvent.OnShareRun)
+                        val bitmapUri = MediaStore.Images.Media.insertImage(
+                            context.contentResolver,
+                            state.snapshot,
+                            "Run screenshot",
+                            null
+                        )
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_STREAM, bitmapUri)
+                            type = "image/png"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    }) {
+                        Text(text = "Share")
                     }
                 }
         }
